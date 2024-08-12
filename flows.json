@@ -1,1 +1,224 @@
-[]
+[
+    {
+        "id": "5caf757daed772a8",
+        "type": "tab",
+        "label": "Turn On/Off",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0a99324eee72f8ed",
+        "type": "junction",
+        "z": "5caf757daed772a8",
+        "x": 520,
+        "y": 400,
+        "wires": [
+            [
+                "868a54d44f78fbcd"
+            ]
+        ]
+    },
+    {
+        "id": "347c23ebe0f90646",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.100.10",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "8c24fac051cba77c",
+        "type": "global-config",
+        "name": "global-config",
+        "env": [
+            {
+                "name": "ClockBlada",
+                "value": "awtrix_635047",
+                "type": "str"
+            },
+            {
+                "name": "ClockSpecker",
+                "value": "awtrix_635048",
+                "type": "str"
+            }
+        ]
+    },
+    {
+        "id": "5899b8fb290eb579",
+        "type": "inject",
+        "z": "5caf757daed772a8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 390,
+        "y": 380,
+        "wires": [
+            [
+                "0a99324eee72f8ed",
+                "d0f94b6bf30b8336"
+            ]
+        ]
+    },
+    {
+        "id": "d0f94b6bf30b8336",
+        "type": "function",
+        "z": "5caf757daed772a8",
+        "name": "Specker",
+        "func": "const topic = `${global.get(\"ClockSpecker\")}/power`\n\nvar newMsg = {\n    topic: topic\n};\n\nreturn newMsg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 360,
+        "wires": [
+            [
+                "8257c9e8fec08cb9"
+            ]
+        ]
+    },
+    {
+        "id": "868a54d44f78fbcd",
+        "type": "function",
+        "z": "5caf757daed772a8",
+        "name": "Blada",
+        "func": "const topic = `${global.get(\"ClockBlada\")}/power`\n\nvar newMsg = {\n    topic: topic\n};\n\nreturn newMsg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 400,
+        "wires": [
+            [
+                "8257c9e8fec08cb9"
+            ]
+        ]
+    },
+    {
+        "id": "8257c9e8fec08cb9",
+        "type": "trigger",
+        "z": "5caf757daed772a8",
+        "name": "",
+        "op1": "object",
+        "op2": "0",
+        "op1type": "date",
+        "op2type": "str",
+        "duration": "-1",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "",
+        "bytopic": "topic",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 790,
+        "y": 380,
+        "wires": [
+            [
+                "ed7ad3ab739e849f"
+            ]
+        ]
+    },
+    {
+        "id": "139e4f92a19536b5",
+        "type": "function",
+        "z": "5caf757daed772a8",
+        "name": "function 1",
+        "func": "var newMsg = {\n    topic: msg.topic\n};\n\nif (Number(msg.hour) > global.get(\"TurnOff\") || Number(msg.hour) < global.get(\"TurnOn\"))\n    newMsg.payload = { \"power\": false }\nelse \n    newMsg.payload = { \"power\": true }\nreturn newMsg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 380,
+        "wires": [
+            [
+                "5e769de52e50690a"
+            ]
+        ]
+    },
+    {
+        "id": "5e769de52e50690a",
+        "type": "mqtt out",
+        "z": "5caf757daed772a8",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "347c23ebe0f90646",
+        "x": 1270,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "ed7ad3ab739e849f",
+        "type": "moment",
+        "z": "5caf757daed772a8",
+        "name": "Hour",
+        "topic": "",
+        "input": "payload",
+        "inputType": "msg",
+        "inTz": "Europe/Warsaw",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "HH",
+        "locale": "en-US",
+        "output": "hour",
+        "outputType": "msg",
+        "outTz": "Europe/Warsaw",
+        "x": 970,
+        "y": 380,
+        "wires": [
+            [
+                "139e4f92a19536b5"
+            ]
+        ]
+    }
+]
